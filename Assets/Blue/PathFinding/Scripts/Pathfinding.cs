@@ -10,6 +10,14 @@ namespace Blue.Pathfinding
         PathRequestManager requestManager;
         Grid grid;
 
+        private bool useTetha
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         void Awake()
         {
             requestManager = GetComponent<PathRequestManager>();
@@ -114,7 +122,11 @@ namespace Blue.Pathfinding
                 path.Add(currentNode);
                 currentNode = currentNode.parent;
             }
-            Vector3[] waypoints = SimplifyPath(path);//quickFix(path);
+            Vector3[] waypoints = null;
+            if (useTetha)
+                waypoints = ThetaPath(path);
+            else
+                waypoints = SimplifyPath(path);
             Array.Reverse(waypoints);
             return waypoints;
 
@@ -157,6 +169,29 @@ namespace Blue.Pathfinding
                     waypoints.Add(path[i].worldPosition);
                 }
                 directionOld = directionNew;
+            }
+            return waypoints.ToArray();
+        }
+
+        Vector3[] ThetaPath(List<Node> path)
+        {
+            List<Vector3> waypoints = new List<Vector3>();
+            waypoints.Add(path[0].worldPosition);
+            for (int i = 0; i < path.Count; i++)
+            {
+                for (int j = path.Count-1; j > i; j--)
+                {
+                    float distance = Vector3.Distance(path[i].worldPosition, path[j].worldPosition);
+                    // have to change unwalkable mask to somethin more usefull
+
+                    if (!Physics.Raycast(path[i].worldPosition, path[j].worldPosition - path[i].worldPosition, distance, grid.unwalkableMask))
+                    {
+                        i = j;
+
+                        waypoints.Add(path[i].worldPosition);
+                        break;
+                    }
+                }
             }
             return waypoints.ToArray();
         }

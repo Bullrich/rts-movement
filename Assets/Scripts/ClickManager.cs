@@ -10,6 +10,7 @@ namespace rts
     public class ClickManager : MonoBehaviour
     {
         public Unit unit;
+        public LayerMask testLayer;
         private void CheckClick()
         {
             if (Input.GetMouseButtonDown(0))
@@ -21,6 +22,14 @@ namespace rts
                     unit.NavigateToPoint(unit.transform.position, hit.point);
                 }
             }
+        }
+
+        public void CheckHitBetweenPoints(Vector3 start, Vector3 end, LayerMask mask)
+        {
+            if (Physics.Raycast(start, end, Vector3.Distance(start, end), mask))
+                Debug.DrawLine(start, end, Color.red, 2, false);
+            else
+                Debug.DrawLine(start, end, Color.blue, 2, false);
         }
 
         private void Update()
