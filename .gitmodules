@@ -1,0 +1,3 @@
+[submodule "Assets/blue"]
+	path = Assets/blue
+	url = https://github.com/Bullrich/BlueTools
